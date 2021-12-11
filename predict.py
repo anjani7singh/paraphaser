@@ -1,5 +1,6 @@
 import torch
 from transformers import T5ForConditionalGeneration,T5Tokenizer
+import time
 
 
 def set_seed(seed):
@@ -17,7 +18,7 @@ print ("device ",device)
 model = model.to(device)
 print("Please enter Sentence: ")
 sentence = input()
-
+start = time.process_time()
 text =  "paraphrase: " + sentence + " </s>"
 
 
@@ -37,6 +38,7 @@ beam_outputs = model.generate(
     early_stopping=True,
     num_return_sequences=10
 )
+print("Time taken: ",time.process_time() - start)
 
 
 print ("\nOriginal sentence ::")
