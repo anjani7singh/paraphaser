@@ -9,7 +9,7 @@ def set_seed(seed):
 
 set_seed(42)
 
-model = T5ForConditionalGeneration.from_pretrained('ramsrigouthamg/t5_squad_v1')
+model = T5ForConditionalGeneration.from_pretrained('./model')
 tokenizer = T5Tokenizer.from_pretrained('t5-base')
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -39,10 +39,10 @@ beam_outputs = model.generate(
 )
 
 
-print ("\nOriginal Question ::")
+print ("\nOriginal sentence ::")
 print (sentence)
 print ("\n")
-print ("Paraphrased Questions :: ")
+print ("Paraphrased sentences :: ")
 final_outputs =[]
 for beam_output in beam_outputs:
     sent = tokenizer.decode(beam_output, skip_special_tokens=True,clean_up_tokenization_spaces=True)
