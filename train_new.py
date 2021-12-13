@@ -271,7 +271,6 @@ checkpoint_callback = pl.callbacks.ModelCheckpoint(
 train_params = dict(
     accumulate_grad_batches=args.gradient_accumulation_steps,
     gpus=args.n_gpu,
-    strategy=args.strategy,
     max_epochs=args.num_train_epochs,
     early_stop_callback=False,
     precision= 16 if args.fp_16 else 32,
