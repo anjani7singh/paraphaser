@@ -174,15 +174,15 @@ class LoggingCallback(pl.Callback):
 args_dict = dict(
     data_dir="", # path for data files
     output_dir="", # path to save the checkpoints
-    model_name_or_path='t5-large',
-    tokenizer_name_or_path='t5-large',
+    model_name_or_path='t5-base',
+    tokenizer_name_or_path='t5-base',
     max_seq_length=512,
     learning_rate=3e-4,
     weight_decay=0.0,
     adam_epsilon=1e-8,
     warmup_steps=0,
-    train_batch_size=6,
-    eval_batch_size=6,
+    train_batch_size=16,
+    eval_batch_size=16,
     num_train_epochs=16,
     gradient_accumulation_steps=16,
     n_gpu=1,
@@ -259,7 +259,7 @@ print(tokenizer.decode(data['target_ids']))
 if not os.path.exists('t5_paraphrase'):
     os.makedirs('t5_paraphrase')
 
-args_dict.update({'data_dir': './', 'output_dir': 't5_paraphrase', 'num_train_epochs':5,'max_seq_length':256})
+args_dict.update({'data_dir': './', 'output_dir': 't5_paraphrase', 'num_train_epochs':20,'max_seq_length':256})
 args = argparse.Namespace(**args_dict)
 print(args_dict)
 
