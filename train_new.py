@@ -42,7 +42,7 @@ class T5FineTuner(pl.LightningModule):
         super(T5FineTuner, self).__init__()
         self.hparams = hparams
 
-        self.model = T5ForConditionalGeneration.from_pretrained("./t5_paraphrase/checkpointepoch=4.ckpt'")
+        self.model = T5ForConditionalGeneration.from_pretrained("./t5_paraphrase/checkpointepoch=5.ckpt")
         self.tokenizer = T5Tokenizer.from_pretrained(hparams.tokenizer_name_or_path)
 
     def is_logger(self):
