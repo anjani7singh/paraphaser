@@ -208,8 +208,8 @@ class LoggingCallback(pl.Callback):
 args_dict = dict(
     data_dir="", # path for data files
     output_dir="", # path to save the checkpoints
-    model_name_or_path='t5-base',
-    tokenizer_name_or_path='t5-base',
+    model_name_or_path='ramsrigouthamg/t5-large-paraphraser-diverse-high-quality',
+    tokenizer_name_or_path='ramsrigouthamg/t5-large-paraphraser-diverse-high-quality',
     max_seq_length=512,
     learning_rate=3e-4,
     weight_decay=0.0,
