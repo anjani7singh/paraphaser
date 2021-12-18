@@ -95,6 +95,7 @@ class T5FineTuner(pl.LightningModule):
     def training_epoch_end(self, outputs):
         avg_train_loss = torch.stack([x["loss"] for x in outputs]).mean()
         tensorboard_logs = {"avg_train_loss": avg_train_loss}
+        self.hparams.learning_rate=self.hparams.learning_rate/10
         return {"avg_train_loss": avg_train_loss, "log": tensorboard_logs, 'progress_bar': tensorboard_logs}
 
     def validation_step(self, batch, batch_idx):
@@ -120,11 +121,12 @@ class T5FineTuner(pl.LightningModule):
                 top_p=0.98,
                 early_stopping=True,
                 num_return_sequences=1)
-            output.append(self.tokenizer.decode(beam_output, skip_special_tokens=True,clean_up_tokenization_spaces=True))
+
+            output.append(self.tokenizer.decode(beam_output[0], skip_special_tokens=True,clean_up_tokenization_spaces=True))
         write_file(output)
         print(f"Inputs: \n {texts} \n\n Outputs: \n{output}")
         # reduce LR:
-        self.hparams.learning_rate=self.hparams.learning_rate/10
+        
         return {"avg_val_loss": avg_loss, "log": tensorboard_logs, 'progress_bar': tensorboard_logs}
 
     def configure_optimizers(self):
