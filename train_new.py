@@ -35,16 +35,15 @@ def set_seed(seed):
     torch.cuda.manual_seed_all(seed)
 
 set_seed(42)
-i=0
+
 def read_file():
     with open('./t5_test.txt', encoding='utf8') as f:
         lines=[]
         for line in f:
             lines.append(line.strip())
     return lines
-def write_file(a_list):
-    i=i+1
-    textfile = open(f"test_epoch_{i}.txt", "w")
+def write_file(num,a_list):
+    textfile = open(f"test_epoch_{num}.txt", "w")
     for element in a_list:
         textfile.write(element + "\n")
     textfile.close()
@@ -53,7 +52,7 @@ class T5FineTuner(pl.LightningModule):
     def __init__(self, hparams):
         super(T5FineTuner, self).__init__()
         self.hparams = hparams
-
+        self.count=1
         self.model = T5ForConditionalGeneration.from_pretrained(hparams.model_name_or_path)
         self.tokenizer = T5Tokenizer.from_pretrained(hparams.tokenizer_name_or_path)
 
@@ -123,7 +122,8 @@ class T5FineTuner(pl.LightningModule):
                 num_return_sequences=1)
 
             output.append(self.tokenizer.decode(beam_output[0], skip_special_tokens=True,clean_up_tokenization_spaces=True))
-        write_file(output)
+        write_file(self.count,output)
+        self.count += 1
         print(f"Inputs: \n {texts} \n\n Outputs: \n{output}")
         # reduce LR:
         
