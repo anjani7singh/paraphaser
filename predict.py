@@ -36,7 +36,7 @@ beam_outputs = model.generate(
     top_k=120,
     top_p=0.98,
     early_stopping=True,
-    num_return_sequences=10
+    num_return_sequences=1
 )
 print("Time taken: ",time.process_time() - start)
 
