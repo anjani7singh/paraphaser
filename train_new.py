@@ -35,7 +35,19 @@ def set_seed(seed):
     torch.cuda.manual_seed_all(seed)
 
 set_seed(42)
-
+i=0
+def read_file():
+    with open('./t5_test.txt', encoding='utf8') as f:
+        lines=[]
+        for line in f:
+            lines.append(line.strip())
+    return lines
+def write_file(a_list):
+    i=i+1
+    textfile = open(f"test_epoch_{i}.txt", "w")
+    for element in a_list:
+        textfile.write(element + "\n")
+    textfile.close()
 
 class T5FineTuner(pl.LightningModule):
     def __init__(self, hparams):
@@ -92,6 +104,27 @@ class T5FineTuner(pl.LightningModule):
     def validation_epoch_end(self, outputs):
         avg_loss = torch.stack([x["val_loss"] for x in outputs]).mean()
         tensorboard_logs = {"val_loss": avg_loss}
+        #read file:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        texts=read_file()
+        output=[]
+        for txt in texts:
+            encoding = self.tokenizer.encode_plus(txt,pad_to_max_length=True, return_tensors="pt")
+            input_ids, attention_masks = encoding["input_ids"].to(device), encoding["attention_mask"].to(device)
+            # set top_k = 50 and set top_p = 0.95 and num_return_sequences = 3
+            beam_output = self.model.generate(
+                input_ids=input_ids, attention_mask=attention_masks,
+                do_sample=True,
+                max_length=256,
+                top_k=120,
+                top_p=0.98,
+                early_stopping=True,
+                num_return_sequences=1)
+            output.append(self.tokenizer.decode(beam_output, skip_special_tokens=True,clean_up_tokenization_spaces=True))
+        write_file(output)
+        print(f"Inputs: \n {texts} \n\n Outputs: \n{output}")
+        # reduce LR:
+        self.hparams.learning_rate=self.hparams.learning_rate/10
         return {"avg_val_loss": avg_loss, "log": tensorboard_logs, 'progress_bar': tensorboard_logs}
 
     def configure_optimizers(self):
@@ -123,7 +156,6 @@ class T5FineTuner(pl.LightningModule):
 
     def get_tqdm_dict(self):
         tqdm_dict = {"loss": "{:.3f}".format(self.trainer.avg_loss), "lr": self.lr_scheduler.get_last_lr()[-1]}
-
         return tqdm_dict
 
     def train_dataloader(self):
@@ -197,7 +229,6 @@ train_path = "./paraphrase_train.csv"
 val_path = "./paraphrase_val.csv"
 
 train = pd.read_csv(train_path)
-print (train.head())
 
 tokenizer = T5Tokenizer.from_pretrained('t5-base')
 
